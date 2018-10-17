@@ -1,0 +1,152 @@
+.heading{
+    text-align: left;
+    margin-top: 25.5px;
+    font-size: 65px;
+    color: white;
+    font-weight: 700;
+}
+
+.row0, .row1{
+    background: #0077C8;
+}
+
+.font{
+
+}
+
+.hammer-heading{
+    text-align: center;
+}
+
+.sub-text{
+    text-align: center;
+    font-size: 1.6em;
+    color: white;
+    display: inline;
+    margin-left: 10px;
+}
+.icon{
+    display: inline;
+    margin-left: 3px;
+    margin-bottom: 3px;
+}
+
+.stats-border{
+    border-bottom: 5px solid white;
+    border-left: 3px solid white;
+}
+
+.sub-text-heading{
+    text-align: left;
+    margin: 0;
+    margin-left: 10px;
+    color: white;
+}
+
+.trans-heading{
+    text-align: left;
+    margin: 0;
+    margin-left: 10px;
+}
+.trans-value{
+    text-align: center;
+    border-bottom: 3px solid black;
+    border-left: 8px solid black;
+    margin-top: 0;
+    margin-bottom: 50px;
+}
+
+.mybtn{
+    width: 150px;
+    text-align: center;
+}
+
+.centered{
+    text-align: center;
+}
+
+#line_tran{
+    position: absolute;
+    width: 100%
+}
+#line_lat{
+    display: none;
+    position: absolute;
+    width: 100%
+}
+#line_cpu{
+    display: none;
+    position: absolute;
+    width: 100%
+}
+
+.mycell-header2{
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    display: table;
+    text-align: center;
+    height: 100%;
+}
+
+.mycell-header1{
+    display: table;
+    text-align: center;
+    height: 100%;
+    font-weight: 700;
+    background: #0077C8;
+}
+.mycell-text1{
+    display: table-cell;
+    vertical-align: middle;
+    color: white;
+}
+.mycell-text2{
+    display: table-cell;
+    vertical-align: middle;
+    border-radius: 100%;
+    font-size: 1.5em;
+}
+
+.mycell-text3{
+    display: table-cell;
+    vertical-align: middle;
+    border-radius: 100%;
+    color: white;
+}
+
+
+.btn-primary {
+    color: #0077C8;
+    background-color: white;
+    border-color: black;
+    font-weight: 700;
+}
+
+.btn-primary:active {
+    color: #0077C8;
+    background-color: white;
+    border-color: black;
+    font-weight: 700;
+}
+
+.btn-primary:focus {
+    color: #0077C8;
+    background-color: white;
+    border-color: black;
+    font-weight: 700;
+}
+
+.btn-primary:visited {
+    color: #0077C8;
+    background-color: white;
+    border-color: black;
+    font-weight: 700;
+}
+
+
+.btn-primary:hover {
+    color: #0077C8;
+    background-color: white;
+    border-color: black;
+    font-weight: 700;
+}

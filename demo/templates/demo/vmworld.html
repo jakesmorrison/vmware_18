@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>VMWorld: Persistent Memory Virtualized</title>
+
+    {% load staticfiles %}
+    <link href=" {% static 'demo/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href=" {% static 'demo/css/bootstrap-slider.css' %}" rel="stylesheet">
+    <link href=" {% static 'demo/css/vmworld.css' %}" rel="stylesheet">
+
+
+</head>
+<body>
+
+<div class="container">
+    <!--title-->
+    <div class="row row0">
+        <div class="col-xs-12" style="height: 100%">
+            <h1 class="title-text">Persistent Memory Virtualized</h1>
+        </div>
+        <button type="button" class="btn btn-primary" id="btn-settings" >Demo Settings</button>
+
+    </div>
+    <!--main row-->
+    <div class="row row1">
+        <div class="col-xs-4">
+            <!--icon-->
+            <div class="row row10">
+                <div class="col-xs-4">
+                    <h3 class="icon-text centered" style="margin-top: 55px;">Virtual<br>Machine<br>Specs <span class="hor_line"></span></h3>
+                </div>
+                <!--<div class="col-xs-3">-->
+                    <!--<h3 class="icon-text centered">MSSQL</h3>-->
+                    <!--<img class="icon centered-image" src="{% static 'demo/images/database.png' %}" alt="micron">-->
+                <!--</div>-->
+                <div class="col-xs-4">
+                    <h3 class="icon-text centered">32GB</h3>
+                    <img class="icon centered-image" src="{% static 'demo/images/mem.png' %}" alt="micron">
+                </div>
+                <div class="col-xs-4">
+                    <h3 class="icon-text centered">12</h3>
+                    <img class="icon centered-image" style="height: 84px;" src="{% static 'demo/images/cpu.png' %}" alt="micron">
+                </div>
+            </div>
+            <div class="row row11">
+                <table>
+                    <tr>
+                        <td class="blank no_bottom">
+                            <!--<h3 class="icon-text centered" style="margin-top:0;">500GB</h3><img class="icon centered-image" style="margin-bottom:0;" src="{% static 'demo/images/database.png' %}" alt="micron">-->
+                        </td>
+                        <td class="table-header no_right">
+                            <!--<span class="fuzedrive">-->
+                                <!--<img class="fuzelogo" style="height: 25px;" src="{% static 'demo/images/enmotus_logo_letter.png' %}" alt="micron"> FuzeDrive</span>-->
+                            <!--<br>-->
+                            <span id="nvdimm_label">NVDIMM</span><br>
+                            <!--<span class="my_rect_nvdimm2">6%</span><span class="my_rect_nvdimm">94%</span></td>-->
+                        <td class="table-header no_left">
+                            <span id="nvme_label">NVMe</span>
+                            <!--<span class="my_rect_nvme">100%</span>-->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-header no_bottom">Bandwidth</td>
+                        <td><span id="nvdimm_bw" class="table-data-text"></span><br><span id="sparkline_bw_nvdimm"></span><span id="bw_ratio" class="ratio table-data-text"></span></td>
+                        <td><span id="nvme_bw" class="table-data-text"></span><br><span id="sparkline_bw_nvme"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td class="table-header no_top_bottom ">IOPS</td>
+                        <td><span id="nvdimm_iops" class="table-data-text"></span><br><span id="sparkline_iops_nvdimm"></span><span id="iops_ratio" class="ratio table-data-text"></span></td>
+                        <td><span id="nvme_iops" class="table-data-text"></span><br><span id="sparkline_iops_nvme"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="table-header no_top">Latency</td>
+                        <td><span id="nvdimm_lat" class="table-data-text"></span><br><span id="sparkline_lat_nvdimm"></span><span id="lat_ratio" class="ratio table-data-text"></span></td>
+                        <td><span id="nvme_lat" class="table-data-text"></span><br><span id="sparkline_lat_nvme"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div id="data_panel" class="col-xs-8">
+            <div class="row">
+                <div class="col-xs-4 centered">
+                    <button type="button" class="btn btn-primary mybtn btn-selected" id="btn-bw" onclick="change_graph('Bandwidth')">Bandwidth</button>
+                </div>
+                <div class="col-xs-4 centered">
+                    <button type="button" class="btn btn-primary mybtn" id="btn-iops" onclick="change_graph('IOPS')">IOPS</button>
+                </div>
+                <div class="col-xs-4 centered">
+                    <button type="button" class="btn btn-primary mybtn" id="btn-lat" onclick="change_graph('Latency')">Latency</button>
+                </div>
+            </div>
+            <div class="row">
+                <div id="line_bw"></div>
+                <div id="line_lat"></div>
+                <div id="line_iops"></div>
+            </div>
+        </div>
+    </div>
+    <!--log-->
+    <div class="row row2">
+        <div class="col-xs-2 col-xs-offset-10">
+            <img class="micron" src="{% static 'demo/images/micron_icon.png' %}" alt="micron">
+        </div>
+        <!--<div class="col-xs-1"></div>-->
+        <!--<div class="col-xs-2">-->
+            <!--<img class="enmotus" src="{% static 'demo/images/enmotus.png' %}" alt="micron">-->
+        <!--</div>-->
+    </div>
+</div>
+
+<div class="popup">
+    <div class="row">
+        <div class="col-xs-4">
+            <h1 class="setting-title-text">FIO Settings</h1>
+        </div>
+        <div class="col-xs-4 centered">
+        </div>
+        <div class="col-xs-4 centered">
+            <button type="button" class="btn btn-primary" id="btn-kill-fio" onclick="kill_fio()">Shutdown</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <h5 class="" id="bs_value"></h5>
+            <input class="hidden-sm" id="bs" data-slider-id='bs' type="text" data-slider-min="4" data-slider-max="128" data-slider-step="16" data-slider-value="4"/>
+            <h5 class="" id="size_value"></h5>
+            <input class="hidden-sm" id="size" data-slider-id='size' type="text" data-slider-min="2" data-slider-max="12" data-slider-step="2" data-slider-value="10"/>
+            <h5 class="" id="numjobs_value"></h5>
+            <input class="hidden-sm" id="numjobs" data-slider-id='numjobs' type="text" data-slider-min="1" data-slider-max="12" data-slider-step="1" data-slider-value="6"/>
+        </div>
+        <div class="col-xs-6">
+            <h5 class="" id="rw_value"></h5>
+            <input class="hidden-sm" id="rw" data-slider-id='rw' type="text" data-slider-min="0" data-slider-max="3" data-slider-step="1" data-slider-value="3"/>
+            <h5 class="" id="rwmixread_value"></h5>
+            <input class="hidden-sm" id="rwmixread" data-slider-id='rwmixread' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="10" data-slider-value="0"/>
+            <h5 class="" id="runtime_value"></h5>
+            <input class="hidden-sm" id="runtime" data-slider-id='runtime' type="text" data-slider-min="30" data-slider-max="300" data-slider-step="30" data-slider-value="90"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-6">
+            <button type="button" class="btn btn-primary" id="btn-start-fio" onclick="start_fio()">Run FIO Configuration</button>
+        </div>
+        <div class="col-xs-6">
+            <div class="col-xs-6">
+                <h4>Show NVMe</h4>
+                <input type="radio" name="myradio" value=0 checked="checked">
+            </div>
+            <div class="col-xs-6">
+                <h4>Show NVDIMM</h4>
+                <input type="radio" name="myradio" value=1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src=" {% static 'demo/js/jquery-1.12.4.js' %}"></script>
+<script src=" {% static 'demo/js/bootstrap.min.js' %}"></script>
+<script src=" {% static 'demo/js/bootstrap-slider.js' %}"></script>
+<script src=" {% static 'demo/js/highcharts.js' %}"></script>
+<script src=" {% static 'demo/js/highcharts-more.js' %}"></script>
+<script src=" {% static 'demo/js/exporting.js' %}"></script>
+<script src=" {% static 'demo/js/sparkline-jquery.js' %}"></script>
+<script src=" {% static 'demo/js/line_chart.js' %}"></script>
+<script src=" {% static 'demo/js/myjs.js' %}"></script>
+
+<script>
+
+var height = $( document ).height();
+var width = $( '.container' ).width();
+var lc_bw;
+var lc_lat;
+var lc_iops;
+
+var bs = 0;
+var size = 0;
+var rw = 0;
+var rw_arr = ["read", "write", "randread", "randwrite"];
+var rw_arr_display = ["Read", "Write", "Random Read", "Random Write"];
+var numjobs = 0;
+var rwmixread = 0;
+var rwmixwrite = 0;
+var runtime = 0;
+
+var show_nvdimm2 = 0;
+
+var counter = 0;
+
+$( document ).ready(function() {
+    setup_ui();
+    setup_sliders()
+    requestData();
+});
+
+function setup_ui(){
+    $('.row0').css('height', height*.15)
+    $('.row1').css('height', height*.70)
+    $('#line_bw').css('height', height*.59);
+    $('#line_lat').css('height', height*.59);
+    $('#line_iops').css('height', height*.59);
+    $('.popup').css('width', (width/2)-100);
+
+
+    $('#line_bw').css('width', $('#line_bw').width()*.90);
+    $('#line_bw').css('margin-left', $('#line_bw').width()*.05);
+    $('#line_lat').css('width', $('#line_lat').width()*.90);
+    $('#line_lat').css('margin-left', $('#line_lat').width()*.05);
+    $('#line_iops').css('width', $('#line_iops').width()*.90);
+    $('#line_iops').css('margin-left', $('#line_iops').width()*.05);
+
+    $('#data_panel').css('margin-top', height*.08);
+
+    $('.row2').css('height', height*.15)
+    $('.micron').css('margin-top', ($('.row2').height()-$('.micron').height())/2)
+    $('.enmotus').css('margin-top', ($('.row2').height()-$('.enmotus').height())/2)
+
+    $('.row11').css('height', $('.row1').height()-$('.row10').height())
+    $('td').css('height', $('.row11').height()/4)
+
+    lc_bw = line_chart("line_bw","Bandwidth","Bandwidth");
+    lc_lat = line_chart("line_lat","Latency","Latency");
+    lc_iops = line_chart("line_iops","IOPS","IOPS");
+
+    td_height = $('td').height();
+    td_width = $('td').width();
+    
+    <!--td_pos=$('#bw_ratio').parent().position();-->
+    <!--$('#bw_ratio').css('top', td_pos.top + td_height/2 - $('#bw_ratio').height()/2)-->
+    <!--$('#bw_ratio').css('left', td_pos.left + td_width - $('#bw_ratio').width()/2)-->
+    <!---->
+    <!--td_pos=$('#iops_ratio').parent().position();-->
+    <!--$('#iops_ratio').css('top', td_pos.top + td_height/2)-->
+    <!--$('#iops_ratio').css('left', td_pos.left + td_width-10)-->
+
+    <!--td_pos=$('#lat_ratio').parent().position();-->
+    <!--$('#lat_ratio').css('top', td_pos.top + td_height/2)-->
+    <!--$('#lat_ratio').css('left', td_pos.left + td_width-10)-->
+
+}
+
+function change_graph(name){
+    $('#btn-bw').removeClass('btn-selected');
+    $('#btn-lat').removeClass('btn-selected');
+    $('#btn-iops').removeClass('btn-selected');
+
+    if(name === "Bandwidth"){
+        $('#btn-bw').addClass('btn-selected');
+        $('#line_bw').fadeIn();
+        $('#line_lat').css('display', 'none');
+        $('#line_iops').css('display', 'none');
+        lc_bw.reflow();
+    }
+    else if(name === "Latency"){
+        $('#btn-lat').addClass('btn-selected');
+        $('#line_bw').css('display', 'none');
+        $('#line_lat').fadeIn();
+        $('#line_iops').css('display', 'none');
+        lc_lat.reflow();
+    }
+    else if (name === "IOPS"){
+        $('#btn-iops').addClass('btn-selected');
+        $('#line_bw').css('display', 'none');
+        $('#line_lat').css('display', 'none');
+        $('#line_iops').fadeIn();
+        lc_iops.reflow();
+    }
+}
+
+
+function requestData(){
+    url_base = "{% url 'demo:get_data' %}";
+    $.ajax({
+        type: 'GET',
+        url: url_base,
+        success: function(msg) {
+
+            var series = lc_bw.series[0], shift = series.data.length > 30;
+            lc_bw.series[2].addPoint(msg.nvme_bw, false, shift, false);
+            lc_bw.series[0].addPoint(msg.nvdimm_bw, false, shift, false);
+            lc_bw.series[1].addPoint(msg.nvdimm_bw2, false, shift, false);
+            lc_bw.redraw();
+
+            var series = lc_lat.series[0], shift = series.data.length > 30;
+            lc_lat.series[2].addPoint(msg.nvme_lat, false, shift, false);
+            lc_lat.series[0].addPoint(msg.nvdimm_lat, false, shift, false);
+            lc_lat.series[1].addPoint(msg.nvdimm_lat2, false, shift, false);
+            lc_lat.redraw();
+
+            var series = lc_iops.series[0], shift = series.data.length > 30;
+            lc_iops.series[2].addPoint(msg.nvme_iops, false, shift, false);
+            lc_iops.series[0].addPoint(msg.nvdimm_iops, false, shift, false);
+            lc_iops.series[1].addPoint(msg.nvdimm_iops2, false, shift, false);
+            lc_iops.redraw();
+
+
+            if(show_nvdimm2 == 0){
+                lc_bw.series[1].hide();
+                lc_bw.series[2].show();
+
+                lc_lat.series[1].hide();
+                lc_lat.series[2].show();
+
+                lc_iops.series[1].hide();
+                lc_iops.series[2].show();
+
+                $('#nvme_label').html("NVMe");
+                $('#nvdimm_label').html("NVDIMM");
+                $('#nvme_bw').html(msg.nvme_bw[1].toLocaleString() +" MB/s");
+                $('#nvme_lat').html(msg.nvme_lat[1]+" ms");
+                $('#nvme_iops').html(msg.nvme_iops[1].toLocaleString()+"");
+                $('#nvdimm_bw').html(msg.nvdimm_bw[1].toLocaleString()+" MB/s");
+                $('#nvdimm_lat').html(msg.nvdimm_lat[1]+" ms");
+                $('#nvdimm_iops').html(msg.nvdimm_iops[1].toLocaleString()+"");
+
+                create_spark_line(msg.nvme_bw,msg.nvme_lat,msg.nvme_iops,msg.nvdimm_bw,msg.nvdimm_lat,msg.nvdimm_iops, show_nvdimm2);
+
+
+                <!--$("#bw_ratio").html((msg.nvdimm_bw[1]/msg.nvme_bw[1]).toFixed(1) +"x")-->
+                <!--$("#iops_ratio").html((msg.nvdimm_iops[1]/msg.nvme_iops[1]).toFixed(1) +"x")-->
+                <!--$("#lat_ratio").html((msg.nvdimm_lat[1]/msg.nvme_lat[1]).toFixed(1) +"x")-->
+
+            }
+            else{
+                lc_bw.series[1].show();
+                lc_bw.series[2].hide();
+
+                lc_lat.series[1].show();
+                lc_lat.series[2].hide();
+
+                lc_iops.series[1].show();
+                lc_iops.series[2].hide();
+
+                $('#nvme_label').html("NVDIMM 2");
+                $('#nvdimm_label').html("NVDIMM 1");
+                $('#nvme_bw').html(msg.nvdimm_bw2[1].toLocaleString() +" MB/s");
+                $('#nvme_lat').html(msg.nvdimm_lat2[1]+" ms");
+                $('#nvme_iops').html(msg.nvdimm_iops2[1].toLocaleString()+"");
+                $('#nvdimm_bw').html(msg.nvdimm_bw[1].toLocaleString()+" MB/s");
+                $('#nvdimm_lat').html(msg.nvdimm_lat[1]+" ms");
+                $('#nvdimm_iops').html(msg.nvdimm_iops[1].toLocaleString()+"");
+
+                $("bw_ratio").html("3.4")
+                $("iops_ratio").html("3.4")
+                $("lat_ratio").html("3.4")
+
+                create_spark_line(msg.nvdimm_bw2,msg.nvdimm_lat2,msg.nvdimm_iops2,msg.nvdimm_bw,msg.nvdimm_lat,msg.nvdimm_iops, show_nvdimm2);
+            }
+
+            setTimeout(requestData, 1500);
+
+        }
+    });
+}
+
+$('#btn-settings').click(function(){
+    $('.popup').toggle(500, function(){
+        if($('.popup').css("display") === "none"){
+            $('.container').css('opacity', 1)
+        }
+        else{
+            $('.container').css('opacity', .1)
+        }
+    });
+})
+
+
+function start_fio(){
+    url_base = "{% url 'demo:start' %}";
+    data = {
+        'bs': bs,
+        'size': size,
+        'numjobs': numjobs,
+        'rw': rw,
+        'rwmixread': rwmixread,
+        'rwmixwrite': 100-rwmixread,
+        'runtime': runtime,
+    }
+
+    $.ajax({
+        type: 'POST',
+        url: url_base,
+        data: data,
+        success: function(msg) {
+            $('.popup').fadeOut();
+            $('.container').css('opacity', 1)
+            lc_bw.setTitle({text: rw_arr_display[rw]+" Bandwidth"})
+            lc_iops.setTitle({text: rw_arr_display[rw]+" IOPS"})
+            lc_lat.setTitle({text: rw_arr_display[rw]+" Latency"})
+
+        }
+    })
+}
+
+function kill_fio(){
+    url_base = "{% url 'demo:shutdown' %}";
+    $.ajax({
+        type: 'GET',
+        url: url_base,
+        success: function(msg) {
+            $('.popup').fadeOut();
+            $('.container').css('opacity', 1)
+        }
+    })
+}
+
+function setup_sliders(){
+    //Other
+    $('#bs').slider({
+        formatter: function(value) {
+            bs = value;
+            $("#bs_value").text("Block Size: "+value.toLocaleString()+"k");
+            return '' + value.toLocaleString() +'k';
+        }
+    });
+    $('#size').slider({
+        formatter: function(value) {
+            size = value;
+            $("#size_value").text("Size: "+value.toLocaleString()+"GB");
+            return '' + value.toLocaleString() +'GB';
+        }
+    });
+    $('#numjobs').slider({
+        formatter: function(value) {
+            numjobs = value;
+            $("#numjobs_value").text("Number of Jobs: "+value.toLocaleString()+"");
+            return '' + value.toLocaleString() +'';
+        }
+    });
+    $('#rw').slider({
+        formatter: function(value) {
+            rw = value;
+            $("#rw_value").text("Operation: "+rw_arr[value]);
+            return '' + rw_arr[value] +'';
+        }
+    });
+    $('#rwmixread').slider({
+        formatter: function(value) {
+            rwmixread = value;
+            $("#rwmixread_value").text(""+value.toLocaleString()+"% Read, "+(100-rwmixread).toLocaleString()+"% Write" );
+            return '' + ""+value.toLocaleString()+"%, "+(100-rwmixread).toLocaleString()+"%";
+        }
+    });
+    $('#runtime').slider({
+        formatter: function(value) {
+            runtime = value;
+            $("#runtime_value").text("Runtime: "+value.toLocaleString()+ " Seconds" );
+            return '' + ""+value.toLocaleString()+" Seconds";
+        }
+    });
+
+}
+
+$("#bs").on("slide", function(slideEvt) {
+	bs = slideEvt.value;
+});
+$("#size").on("slide", function(slideEvt) {
+	size = slideEvt.value;
+});
+$("#numjobs").on("slide", function(slideEvt) {
+	numjobs = slideEvt.value;
+});
+$("#rw").on("slide", function(slideEvt) {
+	rw = slideEvt.value;
+});
+$("#rwmixread").on("slide", function(slideEvt) {
+	rwmixread = slideEvt.value;
+	rwmixwrite = 100-rwmixread;
+    $("#rwmixwrite").slider('value', rwmixwrite);
+});
+$("#runtime").on("slide", function(slideEvt) {
+	runtime = slideEvt.value;
+    $("#runtime").slider('value', runtime);
+});
+
+$('input[type=radio][name=myradio]').change(function(){
+    show_nvdimm2 = this.value;
+    $('.popup').fadeOut();
+    $('.container').css('opacity', 1)
+})
+
+</script>
+
+</body>
+</html>

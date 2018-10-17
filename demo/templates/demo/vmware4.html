@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VM 0</title>
+
+    {% load staticfiles %}
+    <link href=" {% static 'demo/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href=" {% static 'demo/css/jquery-ui.css' %}" rel="stylesheet">
+    <link href=" {% static 'demo/css/vmware4.css' %}" rel="stylesheet">
+
+</head>
+<body style="background: white;">
+
+<div class="container" style="width: 100%; padding-right: 0px; padding-left: 0px;">
+    <div class="col-xs-12">
+        <div class="row row1">
+            <div class="col-xs-8">
+                <h1 class="heading font">Persistent Memory Virtualized</h1>
+            </div>
+        </div>
+            <!--<div class="col-xs-5">-->
+                <!--<div class="col-xs-4 centered">-->
+                    <!--<button type="button" class="btn btn-primary mybtn" onclick="change_graph('Transactions')">Transactions</button>-->
+                <!--</div>-->
+                <!--<div class="col-xs-4 centered">-->
+                    <!--<button type="button" class="btn btn-primary mybtn" onclick="change_graph('Latency')">Latency</button>-->
+                <!--</div>-->
+                <!--<div class="col-xs-4 centered">-->
+                    <!--<button type="button" class="btn btn-primary mybtn" onclick="change_graph('CPU')">CPU Utilization</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <div class="row row2">
+                <div class="col-xs-4 stats-table" style="width: 30%; margin-left: 3%; margin-right: 3%;">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="col-xs-offset-1 col-xs-3 hardware_stats">
+                                <p class="sub-text-heading font">Database</p>
+                                <div class="stats-border">
+                                    <img class="icon" style="width: 30px;" src="{% static 'demo/images/Database-icon.png' %}">
+                                    <p class="sub-text font">500GB SQL</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-3 hardware_stats">
+                                <p class="sub-text-heading font">Memory</p>
+                                <div class="stats-border">
+                                    <img class="icon" style="width: 30px;" src="{% static 'demo/images/memory-icon.png' %}">
+                                    <p class="sub-text font">24GB DDR4</p>
+                                </div>
+                            </div>
+                            <div class="col-xs-3 hardware_stats">
+                                <p class="sub-text-heading font">CPU Count</p>
+                                <div class="stats-border">
+                                    <img class="icon" style="width: 30px;" src="{% static 'demo/images/cpu-icon.png' %}">
+                                    <p class="sub-text font">8 Virtual CPUs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <table>
+                                <tr>
+                                    <td class="blank"></td>
+                                    <td class="table-header">SATA SSD</td>
+                                    <td class="table-header">NVME</td>
+                                    <td class="table-header">NVDIMM</td>
+                                </tr>
+                                <tr>
+                                    <td class="table-header">Transactions Per Minute</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="table-header">Latency</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class="table-header">CPU Utilization</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            <div class="col-xs-offset-0 col-xs-7">
+                <div id="line_tran"></div>
+                <div id="line_lat"></div>
+                <div id="line_cpu"></div>
+            </div>
+        </div>
+        <div class="row row3">
+            <div class="col-xs-offset-4 col-xs-4">
+                <img class="logo micron" style="width: 75%;" src="{% static 'demo/images/micron_white.png' %}">
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-xs-1">-->
+        <!--<div class="row row0"></div>-->
+        <!--<div class="row row1"></div>-->
+    <!--</div>-->
+
+</div>
+
+<script src=" {% static 'demo/js/jquery-1.12.4.js' %}"></script>
+<script src=" {% static 'demo/js/jquery-ui.js' %}"></script>
+<script src=" {% static 'demo/js/bootstrap.min.js' %}"></script>
+<script src=" {% static 'demo/js/highcharts.js' %}"></script>
+<script src=" {% static 'demo/js/highcharts-more.js' %}"></script>
+<script src=" {% static 'demo/js/exporting.js' %}"></script>
+<script src=" {% static 'demo/js/line_chart.js' %}"></script>
+
+<script>
+var lc_tran;
+var lc_lat;
+var lc_cpu;
+
+$( document ).ready(function() {
+    // Setting Sizing
+    var total_height = $(window).height();
+    var total_width = $(window).width();
+
+    lc_tran = line_chart("line_tran","Transactions","Transactions");
+    lc_lat = line_chart("line_lat","Latency","Latency");
+    lc_cpu = line_chart("line_cpu","CPU Utilization","CPU Utilization");
+
+
+    $('.row1').css('height', total_height*.15);
+    $('.row2').css('height', total_height*.65);
+    $('.row2').css('margin-top', total_height*.05);
+    $('#line_tran').css('height', total_height*.60);
+    $('#line_lat').css('height', total_height*.60);
+    $('#line_cpu').css('height', total_height*.60);
+    $('td').css('height', $('td').width());
+
+
+    lc_tran.reflow()
+
+    $('.heading').css('margin-top', ($('.row1').height() - $('.heading').height())/2);
+    //$('.hardware_stats').css('margin-top', ($('.row1').height() - $('.hardware_stats').height())/2);
+    //$('.mybtn').css('margin-top', ($('.row1').height() - $('.mybtn').height())/2);
+    $('.logo').css('margin-top', ($('.row0').height() - $('.logo').height())/2);
+
+
+    $('.row20').css('height', $('.row2').height()/5)
+    $('.row21').css('height', $('.row2').height()/5)
+    $('.row22').css('height', $('.row2').height()/5)
+    $('.row23').css('height', $('.row2').height()/5)
+    $('.mycell').css('height', $('.row2').height()/5)
+    $('.blank').css('height', $('.row2').height()/5)
+    $('.row20').css('margin-top', $('.row2').height()/4-$('.row2').height()/5)
+
+    //requestData();
+});
+
+function requestData(){
+    url_base = "{% url 'demo:get_data' %}";
+    $.ajax({
+        type: 'GET',
+        url: url_base,
+        success: function(msg) {
+
+            var series = lc_tran.series[0], shift = series.data.length > 20;
+            lc_tran.series[0].addPoint(msg.tps_ssd, false, shift);
+            lc_tran.series[1].addPoint(msg.tps_nvme, false, shift);
+            lc_tran.series[2].addPoint(msg.tps_nvdimm, false, shift);
+            lc_tran.redraw();
+
+            var series = lc_lat.series[1], shift = series.data.length > 20;
+            lc_lat.series[0].addPoint(msg.lat_ssd, false, shift);
+            lc_lat.series[1].addPoint(msg.lat_nvme, false, shift);
+            lc_lat.series[2].addPoint(msg.lat_nvdimm, false, shift);
+            lc_lat.redraw();
+
+            var series = lc_cpu.series[2], shift = series.data.length > 20;
+            lc_cpu.series[0].addPoint(msg.cpu_ssd, false, shift);
+            lc_cpu.series[1].addPoint(msg.cpu_nvme, false, shift);
+            lc_cpu.series[2].addPoint(msg.cpu_nvdimm, false, shift);
+            lc_cpu.redraw();
+
+            $('#tran_ssd').html(msg.tpm_ssd.toLocaleString());
+            $('#lat_ssd').html(msg.lat_ssd[1]+"ms");
+            $('#cpu_ssd').html(msg.cpu_ssd[1]+"%");
+            $('#tran_nvme').html(msg.tpm_nvme.toLocaleString());
+            $('#lat_nvme').html(msg.lat_nvme[1]+"ms");
+            $('#cpu_nvme').html(msg.cpu_nvme[1]+"%");
+            $('#tran_nvdimm').html(msg.tpm_nvdimm.toLocaleString());
+            $('#lat_nvdimm').html(msg.lat_nvdimm[1]+"ms");
+            $('#cpu_nvdimm').html(msg.cpu_nvdimm[1]+"%");
+
+            setTimeout(requestData,1000);
+        }
+    });
+}
+
+function change_graph(name){
+    if(name === "Transactions"){
+        $('#line_tran').css('display', 'inline');
+        $('#line_lat').css('display', 'none');
+        $('#line_cpu').css('display', 'none');
+        lc_tran.reflow();
+    }
+    else if(name === "Latency"){
+        $('#line_tran').css('display', 'none');
+        $('#line_lat').css('display', 'inline');
+        $('#line_cpu').css('display', 'none');
+        lc_lat.reflow();
+    }
+    else if (name === "CPU"){
+        $('#line_tran').css('display', 'none');
+        $('#line_lat').css('display', 'none');
+        $('#line_cpu').css('display', 'inline');
+        lc_cpu.reflow();
+    }
+}
+
+
+
+</script>
+
+</body>
+</html>
